@@ -157,9 +157,11 @@ function Header() {
     <header className="sticky top-0 z-30 border-b border-border/80 bg-bg/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <a href="#top" className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-md bg-primary font-display text-lg leading-none text-primary-fg">
-            M
-          </span>
+          <img
+            src="/logo.png"
+            alt="M22 Shop"
+            className="size-10 rounded-full object-cover"
+          />
           <span className="font-display text-2xl tracking-wide text-fg">M22SHOP</span>
         </a>
         <nav className="flex items-center gap-4 text-sm">
@@ -405,7 +407,10 @@ function Footer() {
   return (
     <footer className="border-t border-border bg-bg">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between">
-        <p className="font-display text-2xl tracking-wide text-fg">M22SHOP</p>
+        <a href="#top" className="flex items-center gap-3">
+          <img src="/logo.png" alt="M22 Shop" className="h-10 w-10 rounded-full object-cover" />
+          <p className="font-display text-2xl tracking-wide text-fg">M22SHOP</p>
+        </a>
         <p className="text-sm text-muted">Para aquellos que crecieron jugando.</p>
         <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="text-sm text-fg underline-offset-4 hover:underline">
           {WHATSAPP_DISPLAY}
