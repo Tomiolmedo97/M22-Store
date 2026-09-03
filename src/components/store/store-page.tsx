@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { MessageCircle, Shirt, Sparkles, Truck, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { MessageCircle, Minus, Plus, Shirt, ShoppingBag, Sparkles, Trash2, Truck, X } from "lucide-react";
 import {
   FRANCHISES,
   PRODUCTS,
@@ -7,7 +7,8 @@ import {
   formatPrice,
   type Product,
 } from "@/data/products";
-import { WHATSAPP_DISPLAY, orderMessage, whatsappUrl } from "@/lib/whatsapp";
+import { cartCount, cartLines, cartTotal, useCart } from "@/lib/cart";
+import { WHATSAPP_DISPLAY, cartOrderMessage, whatsappUrl } from "@/lib/whatsapp";
 
 export function StorePage() {
   const [franchise, setFranchise] = useState("Todas");
@@ -15,6 +16,14 @@ export function StorePage() {
   const [onlySale, setOnlySale] = useState(false);
   const [active, setActive] = useState<Product | null>(null);
   const [size, setSize] = useState("L");
+  const [qty, setQty] = useState(1);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const items = useCart((s) => s.items);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -35,6 +44,7 @@ export function StorePage() {
   function openProduct(product: Product) {
     setActive(product);
     setSize("L");
+    setQty(1);
   }
 
   return (
@@ -44,7 +54,7 @@ export function StorePage() {
         <div className="absolute right-0 top-40 h-72 w-72 rounded-full bg-ok/10 blur-3xl" />
       </div>
 
-      <Header />
+      <Header count={hydrated ? cartCount(items) : 0} onCart={() => setCartOpen(true)} />
 
       <main className="relative">
         <Hero onShop={() => document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" })} />
@@ -134,25 +144,44 @@ export function StorePage() {
         href={whatsappUrl("Hola M22shop! Quiero consultar por una remera.")}
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-5 right-5 z-40 flex h-14 items-center gap-2 rounded-full bg-ok px-5 font-semibold text-bg shadow-lg hover:brightness-110"
+        className="fixed bottom-5 left-5 z-40 flex h-14 items-center gap-2 rounded-full bg-ok px-5 font-semibold text-bg shadow-lg hover:brightness-110"
       >
         <MessageCircle className="size-5" />
         <span className="hidden sm:inline">WhatsApp</span>
       </a>
 
+      <button
+        type="button"
+        onClick={() => setCartOpen(true)}
+        className="fixed bottom-5 right-5 z-40 flex h-14 items-center gap-2 rounded-full bg-primary px-5 font-semibold text-primary-fg shadow-lg"
+      >
+        <ShoppingBag className="size-5" />
+        <span>Pedido</span>
+        {hydrated && cartCount(items) > 0 ? (
+          <span className="grid min-w-6 place-items-center rounded-full bg-bg px-1.5 text-xs text-fg">
+            {cartCount(items)}
+          </span>
+        ) : null}
+      </button>
+
       {active ? (
         <ProductModal
           product={active}
           size={size}
+          qty={qty}
           onSize={setSize}
+          onQty={setQty}
           onClose={() => setActive(null)}
+          onAdded={() => setCartOpen(true)}
         />
       ) : null}
+
+      {cartOpen ? <CartDrawer onClose={() => setCartOpen(false)} /> : null}
     </div>
   );
 }
 
-function Header() {
+function Header({ count, onCart }: { count: number; onCart: () => void }) {
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 bg-bg/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
@@ -164,13 +193,26 @@ function Header() {
           />
           <span className="font-display text-2xl tracking-wide text-fg">M22SHOP</span>
         </a>
-        <nav className="flex items-center gap-4 text-sm">
+        <nav className="flex items-center gap-3 text-sm">
           <a href="#catalogo" className="hidden text-muted hover:text-fg sm:inline">
             Catálogo
           </a>
           <a href="#nosotros" className="hidden text-muted hover:text-fg sm:inline">
             La marca
           </a>
+          <button
+            type="button"
+            onClick={onCart}
+            className="relative inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface px-3 font-semibold text-fg"
+          >
+            <ShoppingBag className="size-4" />
+            <span className="hidden sm:inline">Pedido</span>
+            {count > 0 ? (
+              <span className="grid min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] text-primary-fg">
+                {count}
+              </span>
+            ) : null}
+          </button>
           <a
             href={whatsappUrl("Hola M22shop! Quiero hacer un pedido.")}
             target="_blank"
@@ -294,15 +336,21 @@ function ProductCard({
 function ProductModal({
   product,
   size,
+  qty,
   onSize,
+  onQty,
   onClose,
+  onAdded,
 }: {
   product: Product;
   size: string;
+  qty: number;
   onSize: (s: string) => void;
+  onQty: (n: number) => void;
   onClose: () => void;
+  onAdded: () => void;
 }) {
-  const href = whatsappUrl(orderMessage(product.design, size));
+  const add = useCart((s) => s.add);
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-bg/80 p-0 sm:items-center sm:p-6">
       <button type="button" className="absolute inset-0" aria-label="Cerrar" onClick={onClose} />
@@ -354,17 +402,129 @@ function ProductModal({
               ))}
             </div>
           </div>
-          <a
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ok font-semibold text-bg"
+          <div>
+            <p className="mb-2 text-xs uppercase tracking-[0.18em] text-muted">Cantidad</p>
+            <div className="inline-flex items-center rounded-md border border-border bg-bg">
+              <button type="button" className="grid size-10 place-items-center" onClick={() => onQty(Math.max(1, qty - 1))}>
+                <Minus className="size-4" />
+              </button>
+              <span className="min-w-8 text-center text-sm font-semibold tabular-nums">{qty}</span>
+              <button type="button" className="grid size-10 place-items-center" onClick={() => onQty(qty + 1)}>
+                <Plus className="size-4" />
+              </button>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              add(product.id, size, qty);
+              onClose();
+              onAdded();
+            }}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary font-semibold text-primary-fg"
           >
-            <MessageCircle className="size-4" />
-            Pedir talle {size} por WhatsApp
-          </a>
+            <ShoppingBag className="size-4" />
+            Sumar {qty} al pedido · {formatPrice(product.price * qty)}
+          </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function CartDrawer({ onClose }: { onClose: () => void }) {
+  const items = useCart((s) => s.items);
+  const setQty = useCart((s) => s.setQty);
+  const remove = useCart((s) => s.remove);
+  const clear = useCart((s) => s.clear);
+  const lines = cartLines(items);
+  const total = cartTotal(items);
+  const href = whatsappUrl(
+    cartOrderMessage(
+      lines.map((l) => ({ design: l.product.design, size: l.size, qty: l.qty, price: l.product.price })),
+      total,
+    ),
+  );
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-bg/80">
+      <button type="button" className="absolute inset-0" aria-label="Cerrar pedido" onClick={onClose} />
+      <aside className="relative flex h-full w-full max-w-md flex-col border-l border-border bg-surface">
+        <div className="flex items-center justify-between border-b border-border px-4 py-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted">Tu pedido</p>
+            <h2 className="font-display text-3xl tracking-wide text-fg">Carrito</h2>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-full border border-border p-2 text-muted hover:text-fg">
+            <X className="size-4" />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          {lines.length === 0 ? (
+            <p className="rounded-lg border border-border bg-bg p-6 text-center text-sm text-muted">
+              Todavía no sumaste remeras. Elegí un diseño y un talle.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {lines.map((line) => (
+                <li key={`${line.productId}-${line.size}`} className="flex gap-3 rounded-lg border border-border bg-bg p-3">
+                  <img src={line.product.image} alt={line.product.design} className="size-16 rounded-md object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold text-fg">{line.product.design}</p>
+                    <p className="text-xs text-muted">Talle {line.size}</p>
+                    <p className="text-sm font-semibold tabular-nums text-fg">{formatPrice(line.product.price * line.qty)}</p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="inline-flex items-center rounded-md border border-border">
+                        <button type="button" className="grid size-8 place-items-center" onClick={() => setQty(line.productId, line.size, line.qty - 1)}>
+                          <Minus className="size-3" />
+                        </button>
+                        <span className="min-w-6 text-center text-xs font-semibold tabular-nums">{line.qty}</span>
+                        <button type="button" className="grid size-8 place-items-center" onClick={() => setQty(line.productId, line.size, line.qty + 1)}>
+                          <Plus className="size-3" />
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => remove(line.productId, line.size)}
+                        className="grid size-8 place-items-center rounded-md text-muted hover:text-primary"
+                        aria-label="Sacar del pedido"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="border-t border-border p-4">
+          <div className="mb-3 flex items-center justify-between text-sm">
+            <span className="text-muted">Total</span>
+            <span className="text-lg font-bold tabular-nums text-fg">{formatPrice(total)}</span>
+          </div>
+          {lines.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              <a
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ok font-semibold text-bg"
+              >
+                <MessageCircle className="size-4" />
+                Pedir {cartCount(items)} por WhatsApp
+              </a>
+              <button type="button" onClick={clear} className="h-10 text-sm text-muted hover:text-fg">
+                Vaciar pedido
+              </button>
+            </div>
+          ) : (
+            <button type="button" onClick={onClose} className="inline-flex h-12 w-full items-center justify-center rounded-full bg-primary font-semibold text-primary-fg">
+              Seguir mirando
+            </button>
+          )}
+        </div>
+      </aside>
     </div>
   );
 }

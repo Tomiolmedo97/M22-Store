@@ -7,6 +7,17 @@ export function whatsappUrl(text?: string) {
   return `${base}?text=${encodeURIComponent(text)}`;
 }
 
-export function orderMessage(design: string, size: string) {
-  return `Hola M22shop! Quiero la remera "${design}" en talle ${size}.`;
+export function orderMessage(design: string, size: string, qty = 1) {
+  const units = qty > 1 ? `${qty} x ` : "";
+  return `Hola M22shop! Quiero ${units}la remera "${design}" en talle ${size}.`;
+}
+
+export function cartOrderMessage(
+  lines: { design: string; size: string; qty: number; price: number }[],
+  total: number,
+) {
+  const list = lines
+    .map((l) => `• ${l.qty} x "${l.design}" — talle ${l.size} ($${(l.price * l.qty).toLocaleString("es-AR")})`)
+    .join("\n");
+  return `Hola M22shop! Quiero hacer este pedido:\n\n${list}\n\nTotal: $${total.toLocaleString("es-AR")}`;
 }
