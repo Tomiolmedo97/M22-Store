@@ -195,15 +195,10 @@ function Header({ count, onCart }: { count: number; onCart: () => void }) {
           <span className="font-display text-2xl tracking-wide text-fg">M22SHOP</span>
         </a>
         <nav className="flex items-center gap-3 text-sm">
-          <a href="#catalogo" className="hidden text-muted hover:text-fg sm:inline">
+          <a href="#catalogo" className="hidden text-muted hover:text-fg lg:inline">
             Catálogo
           </a>
-          <a href="#nosotros" className="hidden text-muted hover:text-fg sm:inline">
-            La marca
-          </a>
-          <a href="#redes" className="hidden text-muted hover:text-fg sm:inline">
-            Redes
-          </a>
+          <SocialIcons size="sm" />
           <button
             type="button"
             onClick={onCart}
@@ -568,64 +563,52 @@ function About() {
 }
 
 function Socials() {
-  const networks = [
-    {
-      name: "Instagram",
-      hint: "Videos cortos",
-      href: "https://instagram.com/soymaruko22/",
-      icon: Instagram,
-    },
-    {
-      name: "YouTube",
-      hint: "Videos largos",
-      href: "https://www.youtube.com/@Maruko22",
-      icon: Youtube,
-    },
-    {
-      name: "Twitch",
-      hint: "Lives principales",
-      href: "https://www.twitch.tv/maruko22",
-      icon: Twitch,
-    },
-    {
-      name: "TikTok",
-      hint: "Lives, recortes y shorts",
-      href: "https://www.tiktok.com/@soymaruko22",
-      icon: TikTokIcon,
-    },
-    {
-      name: "WhatsApp",
-      hint: "Contacto directo",
-      href: whatsappUrl("Hola M22shop!"),
-      icon: MessageCircle,
-    },
-  ];
-
   return (
     <section id="redes" className="border-t border-border bg-bg">
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <p className="font-display text-sm tracking-[0.28em] text-primary">REDES</p>
-        <h2 className="font-display text-4xl tracking-wide text-fg md:text-5xl">Seguí a Maruko22</h2>
-        <p className="mt-2 max-w-xl text-sm text-muted">
-          Lives, recortes y videos. El hub completo está en Taplink.
-        </p>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {networks.map((n) => (
-            <a
-              key={n.name}
-              href={n.href}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-border bg-surface p-4 transition hover:border-primary/60"
-            >
-              <n.icon className="mb-3 size-6 text-primary" />
-              <p className="font-semibold text-fg">{n.name}</p>
-              <p className="mt-1 text-xs text-muted">{n.hint}</p>
-            </a>
-          ))}
+      <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-14">
+        <div>
+          <p className="font-display text-sm tracking-[0.28em] text-primary">REDES</p>
+          <h2 className="font-display text-4xl tracking-wide text-fg">Seguí a Maruko22</h2>
         </div>
+        <SocialIcons size="md" />
+        <a
+          href="https://m22shop.taplink.bio/"
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+        >
+          Todos los links en Taplink
+        </a>
       </div>
     </section>
+  );
+}
+
+function SocialIcons({ size = "md" }: { size?: "sm" | "md" }) {
+  const box = size === "sm" ? "size-9" : "size-12";
+  const icon = size === "sm" ? "size-4" : "size-6";
+  const items = [
+    { name: "Instagram", href: "https://instagram.com/soymaruko22/", icon: Instagram },
+    { name: "YouTube", href: "https://www.youtube.com/@Maruko22", icon: Youtube },
+    { name: "Twitch", href: "https://www.twitch.tv/maruko22", icon: Twitch },
+    { name: "TikTok", href: "https://www.tiktok.com/@soymaruko22", icon: TikTokIcon },
+  ];
+  return (
+    <div className="flex items-center gap-2">
+      {items.map((n) => (
+        <a
+          key={n.name}
+          href={n.href}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={n.name}
+          title={n.name}
+          className={`grid ${box} place-items-center rounded-full border border-border bg-surface text-fg transition hover:border-primary hover:text-primary`}
+        >
+          <n.icon className={icon} />
+        </a>
+      ))}
+    </div>
   );
 }
 
@@ -645,16 +628,14 @@ function Footer() {
           <img src="/logo.png" alt="M22 Shop" className="h-10 w-10 rounded-full object-cover" />
           <p className="font-display text-2xl tracking-wide text-fg">M22SHOP</p>
         </a>
+        <SocialIcons size="md" />
         <a
           href="https://m22shop.taplink.bio/"
           target="_blank"
           rel="noreferrer"
-          className="text-sm text-fg underline-offset-4 hover:underline"
+          className="text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
         >
-          Todos los links · taplink
-        </a>
-        <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="text-sm text-muted underline-offset-4 hover:text-fg hover:underline">
-          {WHATSAPP_DISPLAY}
+          m22shop.taplink.bio
         </a>
       </div>
     </footer>
