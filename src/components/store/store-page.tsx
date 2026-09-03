@@ -185,42 +185,42 @@ export function StorePage() {
 function Header({ count, onCart }: { count: number; onCart: () => void }) {
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 bg-bg/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <a href="#top" className="flex items-center gap-2">
-          <img
-            src="/logo.png"
-            alt="M22 Shop"
-            className="size-10 rounded-full object-cover"
-          />
-          <span className="font-display text-2xl tracking-wide text-fg">M22SHOP</span>
-        </a>
-        <nav className="flex items-center gap-3 text-sm">
-          <a href="#catalogo" className="hidden text-muted hover:text-fg lg:inline">
-            Catálogo
+      <div className="mx-auto max-w-6xl px-4 py-2 md:py-0">
+        <div className="flex h-14 items-center justify-between gap-3 md:h-16">
+          <a href="#top" className="flex min-w-0 items-center gap-2">
+            <img src="/logo.png" alt="M22 Shop" className="size-10 shrink-0 rounded-full object-cover" />
+            <span className="font-display text-xl tracking-wide text-fg sm:text-2xl">M22SHOP</span>
           </a>
+          <div className="hidden md:block">
+            <SocialIcons size="sm" />
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={onCart}
+              className="relative inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface px-3 font-semibold text-fg"
+            >
+              <ShoppingBag className="size-4" />
+              <span className="hidden sm:inline">Pedido</span>
+              {count > 0 ? (
+                <span className="grid min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] text-primary-fg">
+                  {count}
+                </span>
+              ) : null}
+            </button>
+            <a
+              href={whatsappUrl("Hola M22shop! Quiero hacer un pedido.")}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-10 items-center rounded-full bg-primary px-3 font-semibold text-primary-fg sm:px-4"
+            >
+              Contacto
+            </a>
+          </div>
+        </div>
+        <div className="flex justify-center pb-1 md:hidden">
           <SocialIcons size="sm" />
-          <button
-            type="button"
-            onClick={onCart}
-            className="relative inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface px-3 font-semibold text-fg"
-          >
-            <ShoppingBag className="size-4" />
-            <span className="hidden sm:inline">Pedido</span>
-            {count > 0 ? (
-              <span className="grid min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] text-primary-fg">
-                {count}
-              </span>
-            ) : null}
-          </button>
-          <a
-            href={whatsappUrl("Hola M22shop! Quiero hacer un pedido.")}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-10 items-center rounded-full bg-primary px-4 font-semibold text-primary-fg"
-          >
-            Contacto
-          </a>
-        </nav>
+        </div>
       </div>
     </header>
   );
