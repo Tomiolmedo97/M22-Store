@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { MessageCircle, Minus, Plus, Shirt, ShoppingBag, Sparkles, Trash2, Truck, X } from "lucide-react";
+import { Instagram, MessageCircle, Minus, Plus, Shirt, ShoppingBag, Sparkles, Trash2, Truck, Twitch, Youtube, X } from "lucide-react";
 import {
   FRANCHISES,
   PRODUCTS,
@@ -137,6 +137,7 @@ export function StorePage() {
         </section>
 
         <About />
+        <Socials />
         <Footer />
       </main>
 
@@ -199,6 +200,9 @@ function Header({ count, onCart }: { count: number; onCart: () => void }) {
           </a>
           <a href="#nosotros" className="hidden text-muted hover:text-fg sm:inline">
             La marca
+          </a>
+          <a href="#redes" className="hidden text-muted hover:text-fg sm:inline">
+            Redes
           </a>
           <button
             type="button"
@@ -563,16 +567,93 @@ function About() {
   );
 }
 
+function Socials() {
+  const networks = [
+    {
+      name: "Instagram",
+      hint: "Videos cortos",
+      href: "https://instagram.com/soymaruko22/",
+      icon: Instagram,
+    },
+    {
+      name: "YouTube",
+      hint: "Videos largos",
+      href: "https://www.youtube.com/@Maruko22",
+      icon: Youtube,
+    },
+    {
+      name: "Twitch",
+      hint: "Lives principales",
+      href: "https://www.twitch.tv/maruko22",
+      icon: Twitch,
+    },
+    {
+      name: "TikTok",
+      hint: "Lives, recortes y shorts",
+      href: "https://www.tiktok.com/@soymaruko22",
+      icon: TikTokIcon,
+    },
+    {
+      name: "WhatsApp",
+      hint: "Contacto directo",
+      href: whatsappUrl("Hola M22shop!"),
+      icon: MessageCircle,
+    },
+  ];
+
+  return (
+    <section id="redes" className="border-t border-border bg-bg">
+      <div className="mx-auto max-w-6xl px-4 py-16">
+        <p className="font-display text-sm tracking-[0.28em] text-primary">REDES</p>
+        <h2 className="font-display text-4xl tracking-wide text-fg md:text-5xl">Seguí a Maruko22</h2>
+        <p className="mt-2 max-w-xl text-sm text-muted">
+          Lives, recortes y videos. El hub completo está en Taplink.
+        </p>
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {networks.map((n) => (
+            <a
+              key={n.name}
+              href={n.href}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border border-border bg-surface p-4 transition hover:border-primary/60"
+            >
+              <n.icon className="mb-3 size-6 text-primary" />
+              <p className="font-semibold text-fg">{n.name}</p>
+              <p className="mt-1 text-xs text-muted">{n.hint}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>
+      <path d="M14.5 3h2.1c.2 1.8 1.5 3.3 3.4 3.7v2.2c-1.2 0-2.3-.4-3.2-1v6.4c0 3.4-2.7 6.2-6.2 6.2S4.4 17.7 4.4 14.3 7.1 8.1 10.6 8.1c.3 0 .6 0 .9.1v2.4c-.3-.1-.6-.1-.9-.1-2.1 0-3.8 1.7-3.8 3.8s1.7 3.8 3.8 3.8 3.8-1.7 3.8-3.8V3z" />
+    </svg>
+  );
+}
+
 function Footer() {
   return (
-    <footer className="border-t border-border bg-bg">
+    <footer className="border-t border-border bg-surface">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between">
         <a href="#top" className="flex items-center gap-3">
           <img src="/logo.png" alt="M22 Shop" className="h-10 w-10 rounded-full object-cover" />
           <p className="font-display text-2xl tracking-wide text-fg">M22SHOP</p>
         </a>
-        <p className="text-sm text-muted">Para aquellos que crecieron jugando.</p>
-        <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="text-sm text-fg underline-offset-4 hover:underline">
+        <a
+          href="https://m22shop.taplink.bio/"
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm text-fg underline-offset-4 hover:underline"
+        >
+          Todos los links · taplink
+        </a>
+        <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="text-sm text-muted underline-offset-4 hover:text-fg hover:underline">
           {WHATSAPP_DISPLAY}
         </a>
       </div>
