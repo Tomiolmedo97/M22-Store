@@ -222,31 +222,72 @@ function Header({ count, onCart }: { count: number; onCart: () => void }) {
 }
 
 function Hero({ onShop }: { onShop: () => void }) {
+  const tees = (PRODUCTS.filter((p) => p.featured).length >= 3
+    ? PRODUCTS.filter((p) => p.featured)
+    : PRODUCTS
+  ).slice(0, 3);
+
   return (
     <section id="top" className="relative overflow-hidden border-b border-border">
-      <div className="mx-auto max-w-6xl px-4 py-10 md:py-16">
-        <p className="font-display text-sm tracking-[0.32em] text-primary">¡GRAN LIQUIDACIÓN!</p>
-        <h1 className="mt-2 font-display text-7xl leading-none tracking-wide text-fg md:text-9xl">M22SHOP</h1>
-        <p className="mt-3 max-w-xl text-base text-muted">
-          Hasta el 1° de octubre: llevá 3 remeras a {formatPrice(PACK_PRICE)} · {formatPrice(UNIT_PROMO)} c/u.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={onShop}
-            className="inline-flex h-12 items-center rounded-full bg-primary px-6 font-semibold text-primary-fg"
-          >
-            Ver remeras
-          </button>
-          <a
-            href={whatsappUrl("Hola M22shop! Quiero la promo de 3 remeras.")}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-12 items-center rounded-full border border-border bg-surface px-6 font-semibold text-fg"
-          >
-            Pedir por WhatsApp
-          </a>
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-primary/5" />
+      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 md:grid-cols-2 md:py-14">
+        <div>
+          <span className="inline-flex items-center rounded-full bg-primary px-3 py-1 font-display text-sm tracking-[0.22em] text-primary-fg">
+            GRAN LIQUIDACIÓN
+          </span>
+          <h1 className="mt-4 font-display text-7xl leading-[0.85] tracking-wide text-fg md:text-8xl">
+            M22SHOP
+          </h1>
+          <p className="mt-4 max-w-md text-lg leading-relaxed text-fg">
+            3 remeras. Un solo pack. Hasta el 1° de octubre, antes de renovar la tienda.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={onShop}
+              className="inline-flex h-12 items-center rounded-full bg-primary px-6 font-semibold text-primary-fg"
+            >
+              Armar el pack
+            </button>
+            <a
+              href={whatsappUrl("Hola M22shop! Quiero la promo de 3 remeras.")}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-12 items-center rounded-full border border-border bg-surface px-6 font-semibold text-fg"
+            >
+              Pedir por WhatsApp
+            </a>
+          </div>
         </div>
+
+        <article className="hud-frame relative overflow-hidden rounded-lg border border-primary/40 bg-surface p-5 md:p-6">
+          <div className="scanlines absolute inset-0 opacity-40" />
+          <div className="relative">
+            <div className="relative mx-auto mb-5 h-44 w-56 sm:h-52 sm:w-64">
+              {tees.map((p, i) => (
+                <img
+                  key={p.id}
+                  src={p.image}
+                  alt={p.design}
+                  className={`absolute top-2 h-40 w-32 rounded-md border border-border object-cover shadow-lg sm:h-48 sm:w-36 ${
+                    i === 0 ? "left-0 -rotate-6" : i === 1 ? "left-12 rotate-0" : "left-24 rotate-6"
+                  }`}
+                />
+              ))}
+            </div>
+            <p className="text-center text-xs uppercase tracking-[0.22em] text-muted">Pack x3</p>
+            <p className="text-center font-display text-7xl leading-none tracking-wide text-primary md:text-8xl">
+              {formatPrice(PACK_PRICE)}
+            </p>
+            <p className="mt-1 text-center text-sm text-muted">
+              <span className="mr-2 line-through">{formatPrice(105000)}</span>
+              {formatPrice(UNIT_PROMO)} c/u
+            </p>
+            <div className="mt-5 flex justify-center">
+              <Countdown compact />
+            </div>
+          </div>
+        </article>
       </div>
     </section>
   );
@@ -278,7 +319,7 @@ function Welcome() {
   );
 }
 
-function Countdown() {
+function Countdown({ compact = false }: { compact?: boolean }) {
   const [hydrated, setHydrated] = useState(false);
   const [t, setT] = useState(() => saleRemaining());
 
@@ -289,11 +330,11 @@ function Countdown() {
   }, []);
 
   if (!hydrated) {
-    return <div className="mt-6 h-20" />;
+    return <div className={compact ? "h-16" : "mt-6 h-20"} />;
   }
 
   if (t.done) {
-    return <p className="mt-6 text-sm text-muted">La liquidación cerró el 1° de octubre.</p>;
+    return <p className={`${compact ? "" : "mt-6"} text-sm text-muted`}>La liquidación cerró el 1° de octubre.</p>;
   }
 
   const cells = [
@@ -304,11 +345,11 @@ function Countdown() {
   ];
 
   return (
-    <div className="mt-6">
-      <p className="mb-2 text-xs uppercase tracking-[0.18em] text-muted">Termina el 1° de octubre</p>
-      <div className="flex gap-2">
+    <div className={compact ? "" : "mt-6"}>
+      <p className="mb-2 text-center text-xs uppercase tracking-[0.18em] text-muted">Cierra el 1° de octubre</p>
+      <div className="flex justify-center gap-2">
         {cells.map((c) => (
-          <div key={c.label} className="min-w-16 rounded-md border border-border bg-bg px-3 py-2 text-center">
+          <div key={c.label} className="min-w-14 rounded-md border border-border bg-bg px-2 py-2 text-center sm:min-w-16 sm:px-3">
             <p className="font-display text-3xl tabular-nums text-fg">{String(c.value).padStart(2, "0")}</p>
             <p className="text-[10px] uppercase tracking-wider text-muted">{c.label}</p>
           </div>
