@@ -259,7 +259,7 @@ function Welcome() {
         <img
           src="/maruko.png"
           alt="Maruko22"
-          className="mx-auto size-44 rounded-full object-cover md:size-56"
+          className="mx-auto size-44 shrink-0 self-center rounded-full object-cover object-center md:size-56"
         />
         <div>
           <p className="font-display text-sm tracking-[0.28em] text-primary">BIENVENIDO</p>
@@ -625,7 +625,7 @@ function Community() {
         <img
           src="/maruko.png"
           alt="Maruko22"
-          className="mx-auto size-36 rounded-full object-cover md:size-44"
+          className="mx-auto size-36 shrink-0 self-center rounded-full object-cover object-center md:size-44"
         />
         <div>
           <p className="font-display text-sm tracking-[0.28em] text-primary">COMUNIDAD</p>
