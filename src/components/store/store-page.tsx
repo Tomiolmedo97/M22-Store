@@ -10,6 +10,9 @@ import {
 import { cartCount, cartLines, useCart } from "@/lib/cart";
 import { PACK_PRICE, PACK_SIZE, UNIT_PROMO, isSaleActive, quoteCart, saleRemaining } from "@/lib/sale";
 import { WHATSAPP_DISPLAY, cartOrderMessage, whatsappUrl } from "@/lib/whatsapp";
+import { OfferAtmosphere } from "@/components/fx/offer-atmosphere";
+import { OfferMarquee } from "@/components/fx/offer-marquee";
+import { TiltCard } from "@/components/fx/tilt-card";
 
 export function StorePage() {
   const [franchise, setFranchise] = useState("Todas");
@@ -228,9 +231,9 @@ function Hero({ onShop }: { onShop: () => void }) {
   ).slice(0, 3);
 
   return (
-    <section id="top" className="relative overflow-hidden border-b border-border">
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-primary/5" />
-      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 md:grid-cols-2 md:py-14">
+    <OfferAtmosphere>
+      <OfferMarquee />
+      <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 md:grid-cols-2 md:py-14">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary px-3 py-1 font-display text-sm tracking-[0.22em] text-primary-fg">
             GRAN LIQUIDACIÓN
@@ -260,36 +263,39 @@ function Hero({ onShop }: { onShop: () => void }) {
           </div>
         </div>
 
-        <article className="hud-frame relative overflow-hidden rounded-lg border border-primary/40 bg-surface p-5 md:p-6">
-          <div className="scanlines absolute inset-0 opacity-40" />
-          <div className="relative">
-            <div className="relative mx-auto mb-5 h-44 w-56 sm:h-52 sm:w-64">
-              {tees.map((p, i) => (
-                <img
-                  key={p.id}
-                  src={p.image}
-                  alt={p.design}
-                  className={`absolute top-2 h-40 w-32 rounded-md border border-border object-cover shadow-lg sm:h-48 sm:w-36 ${
-                    i === 0 ? "left-0 -rotate-6" : i === 1 ? "left-12 rotate-0" : "left-24 rotate-6"
-                  }`}
-                />
-              ))}
+        <TiltCard>
+          <article className="hud-frame relative overflow-hidden rounded-lg border border-primary/40 bg-surface/90 p-5 md:p-6">
+            <div className="fx-tilt-shine" aria-hidden="true" />
+            <div className="scanlines absolute inset-0 opacity-30" />
+            <div className="relative">
+              <div className="relative mx-auto mb-5 h-44 w-56 sm:h-52 sm:w-64">
+                {tees.map((p, i) => (
+                  <img
+                    key={p.id}
+                    src={p.image}
+                    alt={p.design}
+                    className={`absolute top-2 h-40 w-32 rounded-md border border-border object-cover shadow-lg sm:h-48 sm:w-36 ${
+                      i === 0 ? "left-0 -rotate-6" : i === 1 ? "left-12 rotate-0" : "left-24 rotate-6"
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className="text-center text-xs uppercase tracking-[0.22em] text-muted">Pack x3</p>
+              <p className="fx-stroke text-center font-display text-7xl leading-none tracking-wide md:text-8xl">
+                {formatPrice(PACK_PRICE)}
+              </p>
+              <p className="mt-1 text-center text-sm text-muted">
+                <span className="mr-2 line-through">{formatPrice(105000)}</span>
+                {formatPrice(UNIT_PROMO)} c/u
+              </p>
+              <div className="mt-5 flex justify-center">
+                <Countdown compact />
+              </div>
             </div>
-            <p className="text-center text-xs uppercase tracking-[0.22em] text-muted">Pack x3</p>
-            <p className="text-center font-display text-7xl leading-none tracking-wide text-primary md:text-8xl">
-              {formatPrice(PACK_PRICE)}
-            </p>
-            <p className="mt-1 text-center text-sm text-muted">
-              <span className="mr-2 line-through">{formatPrice(105000)}</span>
-              {formatPrice(UNIT_PROMO)} c/u
-            </p>
-            <div className="mt-5 flex justify-center">
-              <Countdown compact />
-            </div>
-          </div>
-        </article>
+          </article>
+        </TiltCard>
       </div>
-    </section>
+    </OfferAtmosphere>
   );
 }
 
