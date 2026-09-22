@@ -3,7 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "M22shop";
+const APP_NAME = "M22SHOP";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -14,7 +14,7 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#08090b" },
       {
         name: "description",
-        content: "Remeras gamer de diseño único. Para aquellos que crecieron jugando.",
+        content: "Gran liquidación M22SHOP: 3 remeras a $70.000 hasta el 1 de octubre.",
       },
     ],
     links: [

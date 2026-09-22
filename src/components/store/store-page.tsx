@@ -7,13 +7,13 @@ import {
   formatPrice,
   type Product,
 } from "@/data/products";
-import { cartCount, cartLines, cartTotal, useCart } from "@/lib/cart";
+import { cartCount, cartLines, useCart } from "@/lib/cart";
+import { PACK_PRICE, PACK_SIZE, UNIT_PROMO, isSaleActive, quoteCart, saleRemaining } from "@/lib/sale";
 import { WHATSAPP_DISPLAY, cartOrderMessage, whatsappUrl } from "@/lib/whatsapp";
 
 export function StorePage() {
   const [franchise, setFranchise] = useState("Todas");
   const [query, setQuery] = useState("");
-  const [onlySale, setOnlySale] = useState(false);
   const [active, setActive] = useState<Product | null>(null);
   const [size, setSize] = useState("L");
   const [qty, setQty] = useState(1);
@@ -29,7 +29,6 @@ export function StorePage() {
     const q = query.trim().toLowerCase();
     return PRODUCTS.filter((p) => {
       if (franchise !== "Todas" && p.franchise !== franchise) return false;
-      if (onlySale && !p.discount) return false;
       if (!q) return true;
       return (
         p.design.toLowerCase().includes(q) ||
@@ -37,7 +36,7 @@ export function StorePage() {
         p.title.toLowerCase().includes(q)
       );
     });
-  }, [franchise, query, onlySale]);
+  }, [franchise, query]);
 
   const featured = PRODUCTS.filter((p) => p.featured);
 
@@ -58,6 +57,7 @@ export function StorePage() {
 
       <main className="relative">
         <Hero onShop={() => document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" })} />
+        <Welcome />
 
         <section className="mx-auto max-w-6xl px-4 py-10">
           <div className="mb-5 flex items-end justify-between gap-3">
@@ -96,17 +96,11 @@ export function StorePage() {
           </div>
 
           <div className="mb-6 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setOnlySale((v) => !v)}
-              className={`h-10 rounded-full border px-3 text-xs font-semibold tracking-wide ${
-                onlySale
-                  ? "border-primary bg-primary text-primary-fg"
-                  : "border-border bg-surface text-muted hover:text-fg"
-              }`}
-            >
-              14% OFF
-            </button>
+            {isSaleActive() ? (
+              <span className="inline-flex h-10 items-center rounded-full bg-primary px-3 text-xs font-semibold tracking-wide text-primary-fg">
+                3 x {formatPrice(PACK_PRICE)}
+              </span>
+            ) : null}
             {FRANCHISES.map((name) => (
               <button
                 key={name}
@@ -137,6 +131,7 @@ export function StorePage() {
         </section>
 
         <About />
+        <Community />
         <Socials />
         <Footer />
       </main>
@@ -229,65 +224,97 @@ function Header({ count, onCart }: { count: number; onCart: () => void }) {
 function Hero({ onShop }: { onShop: () => void }) {
   return (
     <section id="top" className="relative overflow-hidden border-b border-border">
-      <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-14 md:grid-cols-[1.15fr_0.85fr] md:py-20">
-        <div>
-          <p className="font-display text-sm tracking-[0.32em] text-primary">PARA AQUELLOS QUE CRECIERON JUGANDO</p>
-          <h1 className="mt-3 font-display text-6xl leading-[0.9] tracking-wide text-fg md:text-8xl">
-            Tu fandom,
-            <br />
-            en algodón
-            <br />
-            negro.
-          </h1>
-          <p className="mt-5 max-w-lg text-base leading-relaxed text-muted">
-            Remeras de diseño único inspiradas en Half-Life, Expedition 33, Resident Evil y los clásicos que te formaron.
-            Estampado DTF, 100% algodón, talles S a 5XL.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={onShop}
-              className="inline-flex h-12 items-center rounded-full bg-primary px-6 font-semibold text-primary-fg"
-            >
-              Ver remeras
-            </button>
-            <a
-              href={whatsappUrl("Hola M22shop! Quiero consultar stock y talles.")}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-12 items-center rounded-full border border-border bg-surface px-6 font-semibold text-fg"
-            >
-              Pedir por WhatsApp
-            </a>
-          </div>
-          <dl className="mt-8 grid grid-cols-3 gap-3 text-center md:text-left">
-            <div>
-              <dt className="text-xs uppercase tracking-wider text-muted">Diseños</dt>
-              <dd className="font-display text-3xl text-fg">{PRODUCTS.length}</dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-wider text-muted">Talles</dt>
-              <dd className="font-display text-3xl text-fg">S–5XL</dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-wider text-muted">Desde</dt>
-              <dd className="font-display text-3xl text-fg">$30.000</dd>
-            </div>
-          </dl>
-        </div>
-        <div className="hud-frame relative aspect-square overflow-hidden rounded-lg bg-surface">
-          <img
-            src={PRODUCTS.find((p) => p.id.includes("half-life-waiting"))?.image}
-            alt="Remera Half-Life"
-            className="h-full w-full object-cover"
-          />
-          <div className="scanlines absolute inset-0" />
-          <div className="absolute left-3 top-3 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-fg">
-            14% OFF en Half-Life
-          </div>
+      <div className="mx-auto max-w-6xl px-4 py-10 md:py-16">
+        <p className="font-display text-sm tracking-[0.32em] text-primary">¡GRAN LIQUIDACIÓN!</p>
+        <h1 className="mt-2 font-display text-7xl leading-none tracking-wide text-fg md:text-9xl">M22SHOP</h1>
+        <p className="mt-3 max-w-xl text-base text-muted">
+          Hasta el 1° de octubre: llevá 3 remeras a {formatPrice(PACK_PRICE)} · {formatPrice(UNIT_PROMO)} c/u.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={onShop}
+            className="inline-flex h-12 items-center rounded-full bg-primary px-6 font-semibold text-primary-fg"
+          >
+            Ver remeras
+          </button>
+          <a
+            href={whatsappUrl("Hola M22shop! Quiero la promo de 3 remeras.")}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-12 items-center rounded-full border border-border bg-surface px-6 font-semibold text-fg"
+          >
+            Pedir por WhatsApp
+          </a>
         </div>
       </div>
     </section>
+  );
+}
+
+function Welcome() {
+  return (
+    <section className="border-b border-border bg-surface">
+      <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 md:grid-cols-[auto_1fr] md:py-16">
+        <img
+          src="/maruko.png"
+          alt="Maruko22"
+          className="mx-auto size-44 rounded-full object-cover md:size-56"
+        />
+        <div>
+          <p className="font-display text-sm tracking-[0.28em] text-primary">BIENVENIDO</p>
+          <h2 className="font-display text-4xl tracking-wide text-fg md:text-5xl">¡Bienvenido a M22Shop!</h2>
+          <p className="mt-2 text-lg font-semibold text-fg">Hola! Soy Maruko22!</p>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">
+            El 1ro de Noviembre renovamos la tienda por lo que hasta el 1ro de Octubre podes llevar 3 remeras a precio reducido!
+          </p>
+          <p className="mt-4 font-display text-3xl tracking-wide text-primary">
+            Llevando 3: {formatPrice(UNIT_PROMO)} c/u
+          </p>
+          <Countdown />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Countdown() {
+  const [hydrated, setHydrated] = useState(false);
+  const [t, setT] = useState(() => saleRemaining());
+
+  useEffect(() => {
+    setHydrated(true);
+    const id = setInterval(() => setT(saleRemaining()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (!hydrated) {
+    return <div className="mt-6 h-20" />;
+  }
+
+  if (t.done) {
+    return <p className="mt-6 text-sm text-muted">La liquidación cerró el 1° de octubre.</p>;
+  }
+
+  const cells = [
+    { label: "Días", value: t.days },
+    { label: "Hs", value: t.hours },
+    { label: "Min", value: t.minutes },
+    { label: "Seg", value: t.seconds },
+  ];
+
+  return (
+    <div className="mt-6">
+      <p className="mb-2 text-xs uppercase tracking-[0.18em] text-muted">Termina el 1° de octubre</p>
+      <div className="flex gap-2">
+        {cells.map((c) => (
+          <div key={c.label} className="min-w-16 rounded-md border border-border bg-bg px-3 py-2 text-center">
+            <p className="font-display text-3xl tabular-nums text-fg">{String(c.value).padStart(2, "0")}</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted">{c.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -437,11 +464,12 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
   const remove = useCart((s) => s.remove);
   const clear = useCart((s) => s.clear);
   const lines = cartLines(items);
-  const total = cartTotal(items);
+  const quote = quoteCart(items);
+  const missing = quote.saleOn && quote.count > 0 ? (PACK_SIZE - (quote.count % PACK_SIZE)) % PACK_SIZE : 0;
   const href = whatsappUrl(
     cartOrderMessage(
       lines.map((l) => ({ design: l.product.design, size: l.size, qty: l.qty, price: l.product.price })),
-      total,
+      quote,
     ),
   );
 
@@ -496,12 +524,40 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
               ))}
             </ul>
           )}
+          {quote.saleOn && missing > 0 && lines.length > 0 ? (
+            <p className="mt-4 rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-fg">
+              Sumá {missing} más y esa terna queda a {formatPrice(PACK_PRICE)}.
+            </p>
+          ) : null}
         </div>
         <div className="border-t border-border p-4">
-          <div className="mb-3 flex items-center justify-between text-sm">
-            <span className="text-muted">Total</span>
-            <span className="text-lg font-bold tabular-nums text-fg">{formatPrice(total)}</span>
-          </div>
+          {lines.length > 0 ? (
+            <dl className="mb-3 space-y-1 text-sm">
+              <div className="flex justify-between text-muted">
+                <dt>Subtotal</dt>
+                <dd className="tabular-nums">{formatPrice(quote.listSubtotal)}</dd>
+              </div>
+              {quote.discount > 0 ? (
+                <div className="flex justify-between text-ok">
+                  <dt>Promo 3 x {formatPrice(PACK_PRICE)}</dt>
+                  <dd className="tabular-nums">-{formatPrice(quote.discount)}</dd>
+                </div>
+              ) : null}
+              <div className="flex justify-between text-muted">
+                <dt>Envío</dt>
+                <dd className="tabular-nums">{formatPrice(quote.shipping)}</dd>
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <dt className="text-muted">Total</dt>
+                <dd className="text-lg font-bold tabular-nums text-fg">{formatPrice(quote.total)}</dd>
+              </div>
+            </dl>
+          ) : (
+            <div className="mb-3 flex items-center justify-between text-sm">
+              <span className="text-muted">Total</span>
+              <span className="text-lg font-bold tabular-nums text-fg">{formatPrice(0)}</span>
+            </div>
+          )}
           {lines.length > 0 ? (
             <div className="flex flex-col gap-2">
               <a
@@ -511,7 +567,7 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ok font-semibold text-bg"
               >
                 <MessageCircle className="size-4" />
-                Pedir {cartCount(items)} por WhatsApp
+                Pedir {quote.count} por WhatsApp
               </a>
               <button type="button" onClick={clear} className="h-10 text-sm text-muted hover:text-fg">
                 Vaciar pedido
@@ -557,6 +613,27 @@ function About() {
             Elegís diseño y talle, y cerramos por WhatsApp {WHATSAPP_DISPLAY}.
           </p>
         </article>
+      </div>
+    </section>
+  );
+}
+
+function Community() {
+  return (
+    <section className="border-t border-border bg-surface">
+      <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-14 md:grid-cols-[auto_1fr]">
+        <img
+          src="/maruko.png"
+          alt="Maruko22"
+          className="mx-auto size-36 rounded-full object-cover md:size-44"
+        />
+        <div>
+          <p className="font-display text-sm tracking-[0.28em] text-primary">COMUNIDAD</p>
+          <h2 className="font-display text-4xl tracking-wide text-fg">Te invito a que me sigas</h2>
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
+            Te invito a que me sigas en mis redes sociales! Hacemos directos, videos, y tenemos una comunidad gamer que te va a encantar!
+          </p>
+        </div>
       </div>
     </section>
   );
