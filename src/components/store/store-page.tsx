@@ -242,7 +242,7 @@ function Hero({ onShop }: { onShop: () => void }) {
             M22SHOP
           </h1>
           <p className="mt-4 max-w-md text-lg leading-relaxed text-fg">
-            3 remeras. Un solo pack. Hasta el 1° de octubre, antes de renovar la tienda.
+            3 remeras. Un solo pack. Hasta el 1° de noviembre, antes de renovar la tienda.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
@@ -313,7 +313,7 @@ function Welcome() {
           <h2 className="font-display text-4xl tracking-wide text-fg md:text-5xl">¡Bienvenido a M22Shop!</h2>
           <p className="mt-2 text-lg font-semibold text-fg">Hola! Soy Maruko22!</p>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">
-            El 1ro de Noviembre renovamos la tienda por lo que hasta el 1ro de Octubre podes llevar 3 remeras a precio reducido!
+            Hasta el 1ro de Noviembre podes llevar 3 remeras a precio reducido!
           </p>
           <p className="mt-4 font-display text-3xl tracking-wide text-primary">
             Llevando 3: {formatPrice(UNIT_PROMO)} c/u
@@ -340,7 +340,7 @@ function Countdown({ compact = false }: { compact?: boolean }) {
   }
 
   if (t.done) {
-    return <p className={`${compact ? "" : "mt-6"} text-sm text-muted`}>La liquidación cerró el 1° de octubre.</p>;
+    return <p className={`${compact ? "" : "mt-6"} text-sm text-muted`}>La liquidación cerró el 1° de noviembre.</p>;
   }
 
   const cells = [
@@ -352,7 +352,7 @@ function Countdown({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className={compact ? "" : "mt-6"}>
-      <p className="mb-2 text-center text-xs uppercase tracking-[0.18em] text-muted">Cierra el 1° de octubre</p>
+      <p className="mb-2 text-center text-xs uppercase tracking-[0.18em] text-muted">Cierra el 1° de noviembre</p>
       <div className="flex justify-center gap-2">
         {cells.map((c) => (
           <div key={c.label} className="min-w-14 rounded-md border border-border bg-bg px-2 py-2 text-center sm:min-w-16 sm:px-3">

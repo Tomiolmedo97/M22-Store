@@ -14,7 +14,7 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#08090b" },
       {
         name: "description",
-        content: "Gran liquidación M22SHOP: 3 remeras a $70.000 hasta el 1 de octubre.",
+        content: "Gran liquidación M22SHOP: 3 remeras a $70.000 hasta el 1 de noviembre.",
       },
     ],
     links: [

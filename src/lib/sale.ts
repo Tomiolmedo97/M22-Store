@@ -1,6 +1,6 @@
 import { cartCount, cartLines, type CartItem } from "@/lib/cart";
 
-export const SALE_END = new Date("2026-10-01T00:00:00-03:00");
+export const SALE_END = new Date("2026-11-01T00:00:00-03:00");
 export const PACK_SIZE = 3;
 export const PACK_PRICE = 70000;
 export const UNIT_PROMO = 23000;

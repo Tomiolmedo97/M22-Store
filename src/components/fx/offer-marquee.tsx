@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const LINE = "GRAN LIQUIDACIÓN  ·  3 REMERAS $70.000  ·  $23.000 C/U  ·  HASTA EL 1° DE OCTUBRE  ·  ";
+const LINE = "GRAN LIQUIDACIÓN  ·  3 REMERAS $70.000  ·  $23.000 C/U  ·  HASTA EL 1° DE NOVIEMBRE  ·  ";
 
 export function OfferMarquee() {
   const ref = useRef<HTMLDivElement>(null);
